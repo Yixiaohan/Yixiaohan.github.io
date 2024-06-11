@@ -1,0 +1,230 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>警示牌上写着 warning | 江歌的博客</title>
+<link rel="shortcut icon" href="https://Yixiaohan.github.io/favicon.ico?v=1718109182876">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://Yixiaohan.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="警示牌上写着 warning | 江歌的博客 - Atom Feed" href="https://Yixiaohan.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="先讲一个段子：
+程序员、产品经理、美术等一行人一起爬山，爬到山顶后，只有程序员掉落悬崖，死翘翘了。
+为什么呢？
+
+因为，警示牌上写着 warning，但程序员平时习惯了无视 warning，最终自由落体死翘翘了 😃
+
+盘点一下，因无视 I..." />
+    <meta name="keywords" content="代码质量" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://Yixiaohan.github.io">
+  <img class="avatar" src="https://Yixiaohan.github.io/images/avatar.png?v=1718109182876" alt="">
+  </a>
+  <h1 class="site-title">
+    江歌的博客
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              警示牌上写着 warning
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-04-12
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+                <a href="https://Yixiaohan.github.io/tag/YKw-ECFfi/" class="post-tag">
+                  # 代码质量
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>先讲一个段子：</p>
+<p>程序员、产品经理、美术等一行人一起爬山，爬到山顶后，只有程序员掉落悬崖，死翘翘了。<br>
+为什么呢？</p>
+<!-- more -->
+<p>因为，警示牌上写着 warning，但程序员平时习惯了无视 warning，最终自由落体死翘翘了 😃</p>
+<hr>
+<p>盘点一下，因无视 IDE 警告，引起的Bug</p>
+<ol>
+<li>案例一：</li>
+</ol>
+<blockquote>
+<p>Undefined constant 'fasle'</p>
+</blockquote>
+<p>PHP 历史项目，方法的返回值，return fasle。typo false 单词拼写错误。<br>
+其实 IDE 给出了警告「<code>Undefined constant 'fasle'</code>」，本来是可以避免线上事故的。</p>
+<ol start="2">
+<li>案例二：</li>
+</ol>
+<blockquote>
+<p>Methon invocation 'xxx' may produce 'NullPointerException'</p>
+</blockquote>
+<ol start="3">
+<li>案例三：</li>
+</ol>
+<blockquote>
+<p>Condition 'Const.SYSTEM_USER.equals(id)' is always false</p>
+</blockquote>
+<p>equals 左边常量类型为 String，右边 id 是 Long 类型。</p>
+<ol start="4">
+<li>案例四：</li>
+</ol>
+<blockquote>
+<p>Unnecessay unboxing 'Const.XXX.longValue()'<br>
+引起 Sonar 报 Bug</p>
+</blockquote>
+<ol start="5">
+<li>案例五：</li>
+</ol>
+<blockquote>
+<p>Condition 'XXXEnum.PASS.equals(obj.getStatus())' is always false</p>
+</blockquote>
+<p>equals 左边常量类型为 枚举，右边 status 是 Integer 类型。</p>
+<ol start="6">
+<li>案例六：</li>
+</ol>
+<blockquote>
+<p>Illegal format string specifiel:unknown conversion in %l</p>
+</blockquote>
+<p>记录日志时 format 使用错误。</p>
+<p>以上案例，本来都是可以避免的，小则浪费研发的自测时间，测试同学时间，Code Reviewer 时间，大则引志线上事故。所以，「尽量」消灭项目中的警告吧。</p>
+<hr>
+<p>写完代码，多看看 IDE 编辑区域右上角，有没有 warning、Error（包括静态代码分析工具），能消息的尽量都消灭，macOS，IDEA 的话，多按按 F2，多使用静态代码分析工具。</p>
+<p>Navigating to next highlighted error (F2)<br>
+<img src="https://Yixiaohan.github.io/post-images/1712925740501.png" alt="" loading="lazy"></p>
+<p>treat warning as error<br>
+<img src="https://Yixiaohan.github.io/post-images/1712925751798.png" alt="" loading="lazy"></p>
+
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://Yixiaohan.github.io/post/hello-gridea/">
+              <h3 class="post-title">
+                Hello World
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://Yixiaohan.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
