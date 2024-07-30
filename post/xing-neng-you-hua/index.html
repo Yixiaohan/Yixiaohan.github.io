@@ -1,0 +1,191 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>性能优化的核心思想 | 江歌的博客</title>
+<link rel="shortcut icon" href="https://Yixiaohan.github.io/favicon.ico?v=1722343434767">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://Yixiaohan.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="性能优化的核心思想 | 江歌的博客 - Atom Feed" href="https://Yixiaohan.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+
+化零为整（集中时间处理邮件、jira(BUG)、IM 信息、批量、Buffer）
+空间换时间（本地缓存、远程缓存）
+时空局部性局部性（顺序读写优于随机读写；MySQL 索引选择全表扫描）
+选择最合适的存储媒介和存储结构（订单历史方案，L..." />
+    <meta name="keywords" content="性能优化,方法论" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://Yixiaohan.github.io">
+  <img class="avatar" src="https://Yixiaohan.github.io/images/avatar.png?v=1722343434767" alt="">
+  </a>
+  <h1 class="site-title">
+    江歌的博客
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              性能优化的核心思想
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-05-13
+              </span>
+              <span>
+                1 min read
+              </span>
+              
+                <a href="https://Yixiaohan.github.io/tag/lyqwLZRmb/" class="post-tag">
+                  # 性能优化
+                </a>
+              
+                <a href="https://Yixiaohan.github.io/tag/5mbN3MKea8/" class="post-tag">
+                  # 方法论
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <figure data-type="image" tabindex="1"><img src="https://Yixiaohan.github.io/post-images/1714102497792.png" alt="" loading="lazy"></figure>
+<ul>
+<li>化零为整（集中时间处理邮件、jira(BUG)、IM 信息、批量、Buffer）</li>
+<li>空间换时间（本地缓存、远程缓存）</li>
+<li>时空局部性局部性（顺序读写优于随机读写；MySQL 索引选择全表扫描）</li>
+<li>选择最合适的存储媒介和存储结构（订单历史方案，List去重等；Join 用 ES）</li>
+<li>减少耗资源操作（减少存储空间；减少IO次数； 如压缩、合并、批量）</li>
+<li>增加（增加CPU利用率、硬件配置）</li>
+<li>同步转异步（异步生成报表、离线数据统计、异步日志、线程池、MQ 消息）</li>
+<li>串行转并行（java.util.Collection#parallelStream）</li>
+<li>知道原理/根据技术特点去优化（深翻页）</li>
+<li>化整为零（分库分表、读写分离）</li>
+<li>反推产品调整业务逻辑（历史订单的查询三个月范围）</li>
+</ul>
+
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://Yixiaohan.github.io/post/jing-shi-pai-shang-xie-zhao-warning/">
+              <h3 class="post-title">
+                警示牌上写着 warning
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://Yixiaohan.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

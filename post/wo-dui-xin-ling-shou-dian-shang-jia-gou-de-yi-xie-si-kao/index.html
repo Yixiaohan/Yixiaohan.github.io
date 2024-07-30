@@ -1,0 +1,645 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>我对新零售电商架构的一些思考 | 江歌的博客</title>
+<link rel="shortcut icon" href="https://Yixiaohan.github.io/favicon.ico?v=1722343434767">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://Yixiaohan.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="我对新零售电商架构的一些思考 | 江歌的博客 - Atom Feed" href="https://Yixiaohan.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="业务架构
+新零售电商是什么
+新零售电商是一个比较复杂的业务（线上线下结合），电商行业的模型，在各个公司、各个阶段表现也不一样。
+但本质上电商业务的参与者，还是围绕着 人-货-场 解决各个域的问题。
+
+
+人（流量供给）
+货最终是要卖给人（顾客..." />
+    <meta name="keywords" content="架构" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://Yixiaohan.github.io">
+  <img class="avatar" src="https://Yixiaohan.github.io/images/avatar.png?v=1722343434767" alt="">
+  </a>
+  <h1 class="site-title">
+    江歌的博客
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              我对新零售电商架构的一些思考
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-06-01
+              </span>
+              <span>
+                15 min read
+              </span>
+              
+                <a href="https://Yixiaohan.github.io/tag/MH8LTNfnS/" class="post-tag">
+                  # 架构
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <h1 id="业务架构">业务架构</h1>
+<h2 id="新零售电商是什么">新零售电商是什么</h2>
+<p>新零售电商是一个比较复杂的业务（线上线下结合），电商行业的模型，在各个公司、各个阶段表现也不一样。</p>
+<p>但本质上电商业务的参与者，还是围绕着 <strong>人-货-场</strong> 解决各个域的问题。</p>
+<ul>
+<li>
+<p>人（流量供给）<br>
+货最终是要卖给人（顾客）的。没有流量（人），货就没有去向。 为什么说阿里电商是流量的黑洞呢？</p>
+</li>
+<li>
+<p>货（商品供给）<br>
+商家、商品端，包括供应链、物流等，都是围绕 B 端提供服务。</p>
+</li>
+<li>
+<p>场<br>
+人 与 货 产生关联的地方。 在场中，达成人、货交易。场地，线下门店。场，618活动、双11等。</p>
+</li>
+</ul>
+<h2 id="新零售电商系统组成">新零售电商系统组成</h2>
+<p>包括但不限于以下系统组成：</p>
+<ul>
+<li>核心（支付、购物车、交易、下单、库存、商品、活动、风控、履约、物流、供应链）</li>
+<li>导购系统、引流系统、销售知识库、演示系统、新零售产品站</li>
+<li>组织关系、数字化建店、客流系统、合作商管理</li>
+<li>新零售WMS、调拨、进货、盘点、固资管理、样机运营、电子价签、供需管理</li>
+<li>商返利、员工激励、财务、税务等</li>
+<li>售后</li>
+<li>BI</li>
+</ul>
+<h2 id="我们的基本架构逻辑">我们的基本架构逻辑</h2>
+<ul>
+<li>软件架构领域，也不存在银弹。没有万能、适用于各场景的技术</li>
+<li>没有最好的架构，只有适合的架构</li>
+<li>架构设计，就是在做 trade-off</li>
+</ul>
+<p>领域建模</p>
+<ul>
+<li>系统架构：以领域划分系统架构</li>
+<li>实体建模：分析业务，建立领域模型</li>
+<li>梳理边界：定义领域边界，高内聚低耦合</li>
+</ul>
+<p>网关收敛</p>
+<ul>
+<li>多租户能力：适应不同的端场景</li>
+<li>鉴权能力：使用不同的鉴权需求</li>
+</ul>
+<p>架构拆分</p>
+<ul>
+<li>端变薄：端组件化，端只是触点</li>
+<li>领域变大变圆：业务、产、研拆到领域内，通过领域协作提效</li>
+<li>领域沉淀：交易以下公共领域沉淀到中台</li>
+</ul>
+<p>数据收敛</p>
+<ul>
+<li>数据属于领域：只允许接口交互</li>
+<li>领域数据领域生：交易即数据，数据正确性</li>
+</ul>
+<figure data-type="image" tabindex="1"><img src="https://Yixiaohan.github.io/post-images/1716195672292.png" alt="" loading="lazy"></figure>
+<h2 id="一定要拆服务怎么拆">一定要拆服务，怎么拆？</h2>
+<p>按界面拆分还是按数据拆分？</p>
+<ul>
+<li>数据是高耦合的</li>
+<li>界面是低耦合的</li>
+</ul>
+<p>按数据拆分，如何拆解？</p>
+<ul>
+<li>按领域实体与领域规则拆分</li>
+<li>领域建模（DDD）是微服务的好朋友</li>
+</ul>
+<h2 id="领域型服务">领域型服务</h2>
+<h3 id="特点">特点</h3>
+<ol>
+<li>明显领域特征：包含领域核心实体，核心规则</li>
+<li>内聚性：充满逻辑内聚性，与外界服务关联较少</li>
+<li>稳定性：需求相对稳定，变化率不高</li>
+</ol>
+<h3 id="建议设计思想">建议设计思想</h3>
+<ol>
+<li>坚决拒绝复制走数据</li>
+<li>对领域深刻建模，有长远规划</li>
+<li>提供领域能力接口，而非数据读写接口</li>
+</ol>
+<h3 id="典型-service">典型 Service</h3>
+<ul>
+<li>库存服务</li>
+</ul>
+<h2 id="流程型服务">流程型服务</h2>
+<h3 id="特点-2">特点</h3>
+<ol>
+<li>以调度一个或多个领域服务为主要工作</li>
+<li>表达的是业务流程，通常有角色，状态机等概念</li>
+<li>通常与一个或多个B端管理后台绑定</li>
+</ol>
+<h3 id="建议设计思想-2">建议设计思想</h3>
+<ol>
+<li>流程系统可收敛也可松散，流程系统的核心价值是快，而不是收敛</li>
+<li>流程服务不应该再被另一个流程服务包装</li>
+<li>简单的业务场景下，流程与领域服务也可以合一，务必考虑未来业务的变化</li>
+<li>一个流程服务调度一个领域服务是非常正常的</li>
+</ol>
+<h3 id="典型-service-2">典型 Service</h3>
+<ol>
+<li>建店系统</li>
+<li>盘点服务</li>
+</ol>
+<h3 id="更复杂的场景">更复杂的场景</h3>
+<ul>
+<li>购物车服务：领域与流程都存在</li>
+</ul>
+<h2 id="领域网关服务">领域网关服务</h2>
+<h3 id="特点-3">特点</h3>
+<ol>
+<li>通常不产生数据，只聚合数据</li>
+<li>核心逻辑是数据编排</li>
+<li>聚合的数据都拥有一个相同的领域实体 ID</li>
+<li>解决的是效率问题，帮助上层服务更简单理解领域数据</li>
+</ol>
+<h3 id="建议设计思想-3">建议设计思想</h3>
+<ol>
+<li>本领域的核心领域服务，建议下沉到另一个服务中，网关服务只读不写</li>
+<li>网关一般只解决跨子领域数据读问题，仍然允许上层服务直接调用一个子领域服务，而不必代理所有流量</li>
+<li>不建议定义无边界网关，甚至团队网关，它会成为组织瓶颈</li>
+</ol>
+<h3 id="典型-service-3">典型 Service</h3>
+<ul>
+<li>组织中台</li>
+</ul>
+<h2 id="bi-型服务">BI 型服务</h2>
+<h3 id="特点-4">特点</h3>
+<p>从 OLAP 平台查询数据，并展示给用户</p>
+<h3 id="典型-service-4">典型 Service</h3>
+<ul>
+<li>App BI 服务</li>
+<li>部门 BI 服务</li>
+</ul>
+<h2 id="通用服务">通用服务</h2>
+<h3 id="特点-5">特点</h3>
+<ul>
+<li>无领域特性，无业务特性的功能</li>
+</ul>
+<h3 id="建议设计思想-4">建议设计思想</h3>
+<ol>
+<li>所有“团队内的通用服务”，都建议改造成公司的通用服务</li>
+<li>不要为了造轮子而造轮子，尽可能复用成熟组件</li>
+</ol>
+<h3 id="典型-service-5">典型 Service</h3>
+<ul>
+<li>监控服务</li>
+<li>调度服务</li>
+<li>消息服务</li>
+</ul>
+<h2 id="典型的三种服务的协作过程进货体系">典型的三种服务的协作过程——进货体系</h2>
+<figure data-type="image" tabindex="2"><img src="https://Yixiaohan.github.io/post-images/1716196039532.png" alt="" loading="lazy"></figure>
+<h2 id="技术-业务解耦架构治理的1-9原则">技术-业务解耦——架构治理的1-9原则</h2>
+<h3 id="1-9原则">1-9原则</h3>
+<ul>
+<li>90% 的技术特性，只应该存在于 10% 的通用服务中</li>
+<li>90% 的业务服务，只应该使用 10% 的稳定技术特性</li>
+</ul>
+<h3 id="从软件演变史去看">从软件演变史去看</h3>
+<p>操作系统，文件系统，数据库，缓存服务，监控系统……</p>
+<ul>
+<li>每个通用软件都是从业务软件中抽象而生的，程序的本身就是抽象</li>
+<li>所以足够“炫技”的技术密集型程序，我们尽可能把它抽象成通用服务</li>
+</ul>
+<h3 id="极限情况下的反范式设计">极限情况下的反范式设计</h3>
+<ul>
+<li>在核心业务，核心场景，极限需求之下，我们也是可以破坏这个原则的</li>
+</ul>
+<h2 id="架构就是我们的技术价值观">架构就是我们的技术价值观</h2>
+<ul>
+<li>设计即权衡，权衡的核心标准就是技术价值观</li>
+</ul>
+<p>技术价值观决定了架构思想！</p>
+<p>我们的基本技术价值观是什么？<br>
+<strong>高效、合作、开放</strong></p>
+<p>一切效率工具的发展逻辑<br>
+<img src="https://Yixiaohan.github.io/post-images/1716195813850.png" alt="" loading="lazy"></p>
+<p>新零售电商数字化的本质也是一样的<br>
+<img src="https://Yixiaohan.github.io/post-images/1716195821920.png" alt="" loading="lazy"></p>
+<h1 id="技术架构之道大纲版">技术架构之道（大纲版）</h1>
+<h2 id="高并发">高并发</h2>
+<h3 id="高并发读">高并发读</h3>
+<ul>
+<li>加缓存</li>
+<li>并发读</li>
+<li>重写轻读</li>
+<li>读写分离（CQRS 架构）</li>
+</ul>
+<h3 id="高并发写">高并发写</h3>
+<ul>
+<li>数据分片</li>
+<li>任务分片</li>
+<li>异步化</li>
+<li>批量</li>
+</ul>
+<h3 id="容量规划">容量规划</h3>
+<ul>
+<li>吞吐量、响应时间、并发数</li>
+<li>压力测试</li>
+<li>容量评估</li>
+</ul>
+<h2 id="高可用与稳定性">高可用与稳定性</h2>
+<ul>
+<li>
+<p>多副本</p>
+</li>
+<li>
+<p>隔离、限流、熔断、降级<br>
+限流注意事项：限流返回给客户端的错误代码、实时监控、实时配置<br>
+熔断注意事项：数据一致性、熔断监控、用户体验<br>
+降级注意事项：数据一致性、熔断监控、用户体验</p>
+</li>
+<li>
+<p>灰度发布与回滚</p>
+</li>
+<li>
+<p>监控体系、日志、报警</p>
+</li>
+</ul>
+<h2 id="数据持久层">数据持久层</h2>
+<ul>
+<li>冷热分离</li>
+<li>查询分离（读写分离）</li>
+<li>分库分表</li>
+</ul>
+<h2 id="缓存层">缓存层</h2>
+<ul>
+<li>读缓存</li>
+<li>写缓存</li>
+</ul>
+<h1 id="技术架构之道文字详情版">技术架构之道（文字详情版）</h1>
+<h2 id="高并发-2">【高并发】</h2>
+<ol>
+<li>
+<p><strong>分布式架构</strong>：将系统分解成多个模块，采用分布式架构来降低单点故障的风险，并提高系统的可伸缩性和性能</p>
+</li>
+<li>
+<p><strong>集群部署</strong>：将一个服务通过集群进行部署，来提升系统整体的吞吐量及响应速度，并使用负载均衡技术将请求均衡分配给多个服务器，以提高系统的性能和可用性。</p>
+</li>
+<li>
+<p><strong>利用缓存</strong>：使用缓存、NoSQL等技术，以提高数据读写的性能和可靠性</p>
+</li>
+<li>
+<p><strong>异步处理</strong>：采用异步处理机制，如使用消息队列、事件驱动等技术，以降低请求响应时间和提高系统吞吐量。</p>
+</li>
+<li>
+<p><strong>预加载</strong>：使用预加载技术来提前加载需要的资源，以减少用户等待时间。</p>
+</li>
+<li>
+<p><strong>代码优化和调优</strong>：对系统代码进行优化和调优，如采用异步I/0、避免锁(减小锁的粒度)、减少循环和递归.避免长事务等，以提高系统性能。</p>
+</li>
+<li>
+<p><strong>数据库优化</strong>：合理的数据库设计和优化，包括合理的索引设计、分库分表、读写分离、缓存优化等，可以有效提高系统的并发度和响应速度。</p>
+</li>
+<li>
+<p><strong>分库分表</strong>：将一个大型的数据库拆分成多个小型的数据库(分库)，然后将每个小型数据库中的表再进行拆分(分表)，从而减轻单个数据库或表的读写压力，通过分库分表，可以将大量的读写操作分散到多个数据库或表中，从而提高系统的并发度和响应速度，</p>
+</li>
+<li>
+<p><strong>读写分离</strong>：读写分离是一种常用的数据库优化技术，它将读操作和写操作分配到不同的数据库实例上处理。通过读写分离，主库主要负责写操作，从库则负责读操作，从而提高了系统的并发度和可扩展性。同时，读写分离还可以提高系统的可用性和容错能力，因为即使主库出现故障，从库仍然可以提供读服务。</p>
+</li>
+<li>
+<p><strong>防止雪崩</strong>：通过使用限流、熔断、降级等技术，可以防止系统因为某个组件出现故障而导致整个系统崩溃的雪崩效应。</p>
+</li>
+<li>
+<p><strong>容错和监控</strong>：实现容错机制，如备份、容灾、负载降级等，以保障系统的可用性。同时，使用监控工具来实时监测系统的运行状况和性能瓶颈，及时做出调整和优化。</p>
+</li>
+<li>
+<p><strong>测试和评估</strong>：进行全面的性能测试和评估，包括压力测试、负载测试、安全测试等，以发现并解决系统的性能瓶颈和安全隐患。</p>
+</li>
+</ol>
+<p>综上所述，设计高并发系统需要从多个方面考虑，需要综合运用各种技术和工具，进行全面的测试和评估，以实现系统的高可用、高性能和高安全性。</p>
+<h2 id="高性能">【高性能】</h2>
+<p>设计高性能的分布式系统需要考虑多个因素，包括架构设计、负载均衡、数据一致性、容错处理、消息队列、缓存、性能监控和安全性等。下面是一些可以帮助设计高性能分布式系统的方法：</p>
+<ol>
+<li>
+<p><strong>架构设计</strong>：选择合适的分布式系统架构，例如微服务架构、SOA架构等，可以有效地提高系统性能</p>
+</li>
+<li>
+<p><strong>负载均衡</strong>：使用负载均衡技术可以将请求分布到多个节点上，提高系统的性能和可用性。可以使用硬件负载均衡器或软件负载均衡器来实现，</p>
+</li>
+<li>
+<p><strong>数据一致性</strong>：保证数据一致性是设计分布式系统的一个重要方面，可以使用一致性哈希、副本复制、分片等技术来保证数据一致性。</p>
+</li>
+<li>
+<p><strong>容错处理</strong>：设计分布式系统时必须考虑容错处理，以防止单点故障。可以使用备份、自动故障转移、容器化等技术来实现容错处理。</p>
+</li>
+<li>
+<p><strong>消息队列</strong>：使用消息队列可以解耦系统组件，提高系统的可伸缩性和性能。</p>
+</li>
+<li>
+<p><strong>缓存</strong>：使用缓存技术可以减轻数据库的负载，提高系统性能</p>
+</li>
+<li>
+<p><strong>性能监控</strong>：使用性能监控工具可以监测系统的性能瓶颈，提高系统的性能和可用性。</p>
+</li>
+<li>
+<p><strong>安全性</strong>：分布式系统的安全性是至关重要的，可以使用身份验证、访问控制等技术来保证系统的安全性</p>
+</li>
+</ol>
+<h2 id="高可用">【高可用】</h2>
+<p>设计一个高可用架构需要考虑多个方面，包括可用性、可靠性、性能、扩展性、安全性等。下面是一些设计高可用架构的一般性原则和方法：</p>
+<ol>
+<li>
+<p><strong>设计集群架构</strong>：采用多节点的集群架构可以提高系统的可用性和可靠性，从而避免单点故障导致系统不可用。</p>
+</li>
+<li>
+<p><strong>采用分布式架构</strong>：采用分布式架构可以将系统的负载分散到多个节点上，从而提高系统的性能和可扩展性。</p>
+</li>
+<li>
+<p><strong>实现故障转移和容错机制</strong>：通过使用冗余组件、备份数据等技术手段，可以实现故障转移和容错机制。例如，采用主从复制、备份、快速切换等技术来确保数据不丢失、系统快速恢复。</p>
+</li>
+<li>
+<p><strong>可靠的服务器和网络</strong>：选择可靠的服务器和网络设备，以确保它们能够在故障时正常运行。可以采用多个服务器进行冗余备份，以实现故障转移和负载均衡。可以选择高可靠性网络设备和路由器，以避免网络故障。</p>
+</li>
+<li>
+<p><strong>容灾和备份</strong>：需要设置容灾和备份计划，以确保在自然灾害、人为错误或其他紧急情况下能够快速恢复服务。可以使用云备份和容灾服务，以提高备份和恢复的效率和可靠性。</p>
+</li>
+<li>
+<p><strong>设计监控和自动化工具</strong>：通过使用监控工具和自动化工具可以实现对系统的实时监控和自动化维护。例如，通过使用系统监控工具、自动化运维工具等来实现自动化运维、自动化扩容等功能，从而减少手动操作和人为错误。</p>
+</li>
+<li>
+<p><strong>实现数据安全保护</strong>：通过采用多层次的安全策略来保护数据的安全性。例如，使用加密技术、防火墙、入侵检测等技术来保护系统和数据的安全。</p>
+</li>
+<li>
+<p><strong>进行容量规划和性能优化</strong>：通过进行容量规划和性能优化，可以提高系统的性能和可扩展性。例如，通过使用缓存、调整配置参数、优化代码等技术手段来提高系统的性能和稳定性。</p>
+</li>
+<li>
+<p><strong>设计自动化扩容和弹性伸缩</strong>：通过设计自动化扩容和弹性伸缩功能，可以根据业务需求和系统负载情况来自动调整系统资源。例如，通过使用自动化扩容工具和自动化弹性伸缩策略来实现系统资源的自动分配和调整。</p>
+</li>
+</ol>
+<p>需要注意的是，设计高可用架构需要综合考虑业务需求、技术方案、资源投入等因素，同时需要不断进行优化和改进，以实现最优的性能和可用性。</p>
+<h1 id="其他架构">其他架构</h1>
+<p>除了业务架构、技术架构，我们也可以做企业架构维度思考，比如还有数据架构、应用架构等</p>
+<p>阅读资料：<a href="https://tonydeng.github.io/EA-practices/">《企业架构设计方法与实践》</a></p>
+<h2 id="知道在做什么">知道在做什么</h2>
+<p>我们做一个事情，不是简单的按照指令以及经验去完成即可，这样的工作经验对自己来说没什么价值。<br>
+好一些的做法是，从各个架构层面都知道自己在做们么和怎么做，才能立体的丰富我们的架构和技术经验，对成长提供养分。</p>
+<p>举一些工作上需要重点关注的点:</p>
+<ul>
+<li>
+<p><strong>业务架构上</strong>:<br>
+我所负责的功能会带来什么业务价值，重要性与我的投入是否匹配（ROI）</p>
+</li>
+<li>
+<p><strong>应用架构上</strong>:<br>
+我做的这个功能属于什么服务和领域，此服务有没有相关的设计开发规范</p>
+</li>
+<li>
+<p><strong>数据架构上</strong>:<br>
+数据模型怎么建，数据每日增量怎么样，增量大的表是分库分表还是冷数备份，或者迁移到支持分片存储的中间件</p>
+</li>
+<li>
+<p><strong>技术架构上</strong>:<br>
+目前服务所使用的技术有哪些我这个功能应该如何做技术选型</p>
+</li>
+<li>
+<p><strong>质量和安全保障</strong>:<br>
+我这个功能模块的 SLA 要求是什么，是否需要支持水平扩展；重要的告警是否都加上了，我存储的这些数据需要加密吗</p>
+</li>
+</ul>
+<h2 id="知道为什么要这么做">知道为什么要这么做</h2>
+<p>当我们接到一件研发任务，需要从各个层面去思考“为什么”，举一些例子：</p>
+<ul>
+<li>
+<p><strong>业务</strong>：<br>
+为什么需要做这么一个东西它在业务流程和价值链路上处于什么位置？</p>
+</li>
+<li>
+<p><strong>应用</strong>：<br>
+为什么是放在这个领域、这个服务里，而不是放到 XXX 里？为什么是提供 dubbo 接口，而不是 HTTP 接口</p>
+</li>
+<li>
+<p><strong>数据</strong>：<br>
+为什么要分库分表，而不是冷数据备份？当前在使用的数据模型我真的看懂了么</p>
+</li>
+<li>
+<p><strong>技术</strong>：<br>
+为什么这里用了策略模式？领域驱动的实现，就一定适用吗？</p>
+</li>
+<li>
+<p><strong>质量</strong>：<br>
+为什么要写单测？为什么他的服务可以压到 20000，我的只能到 10000？</p>
+</li>
+</ul>
+<h1 id="附软件质量模型">附：软件质量模型</h1>
+<p>另外，我们也可以从 软件质量模型 方面思维架构要关心的点<br>
+<img src="https://Yixiaohan.github.io/post-images/1716201329228.png" alt="" loading="lazy"></p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E4%B8%9A%E5%8A%A1%E6%9E%B6%E6%9E%84">业务架构</a>
+<ul>
+<li><a href="#%E6%96%B0%E9%9B%B6%E5%94%AE%E7%94%B5%E5%95%86%E6%98%AF%E4%BB%80%E4%B9%88">新零售电商是什么</a></li>
+<li><a href="#%E6%96%B0%E9%9B%B6%E5%94%AE%E7%94%B5%E5%95%86%E7%B3%BB%E7%BB%9F%E7%BB%84%E6%88%90">新零售电商系统组成</a></li>
+<li><a href="#%E6%88%91%E4%BB%AC%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84%E9%80%BB%E8%BE%91">我们的基本架构逻辑</a></li>
+<li><a href="#%E4%B8%80%E5%AE%9A%E8%A6%81%E6%8B%86%E6%9C%8D%E5%8A%A1%E6%80%8E%E4%B9%88%E6%8B%86">一定要拆服务，怎么拆？</a></li>
+<li><a href="#%E9%A2%86%E5%9F%9F%E5%9E%8B%E6%9C%8D%E5%8A%A1">领域型服务</a>
+<ul>
+<li><a href="#%E7%89%B9%E7%82%B9">特点</a></li>
+<li><a href="#%E5%BB%BA%E8%AE%AE%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3">建议设计思想</a></li>
+<li><a href="#%E5%85%B8%E5%9E%8B-service">典型 Service</a></li>
+</ul>
+</li>
+<li><a href="#%E6%B5%81%E7%A8%8B%E5%9E%8B%E6%9C%8D%E5%8A%A1">流程型服务</a>
+<ul>
+<li><a href="#%E7%89%B9%E7%82%B9-2">特点</a></li>
+<li><a href="#%E5%BB%BA%E8%AE%AE%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3-2">建议设计思想</a></li>
+<li><a href="#%E5%85%B8%E5%9E%8B-service-2">典型 Service</a></li>
+<li><a href="#%E6%9B%B4%E5%A4%8D%E6%9D%82%E7%9A%84%E5%9C%BA%E6%99%AF">更复杂的场景</a></li>
+</ul>
+</li>
+<li><a href="#%E9%A2%86%E5%9F%9F%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1">领域网关服务</a>
+<ul>
+<li><a href="#%E7%89%B9%E7%82%B9-3">特点</a></li>
+<li><a href="#%E5%BB%BA%E8%AE%AE%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3-3">建议设计思想</a></li>
+<li><a href="#%E5%85%B8%E5%9E%8B-service-3">典型 Service</a></li>
+</ul>
+</li>
+<li><a href="#bi-%E5%9E%8B%E6%9C%8D%E5%8A%A1">BI 型服务</a>
+<ul>
+<li><a href="#%E7%89%B9%E7%82%B9-4">特点</a></li>
+<li><a href="#%E5%85%B8%E5%9E%8B-service-4">典型 Service</a></li>
+</ul>
+</li>
+<li><a href="#%E9%80%9A%E7%94%A8%E6%9C%8D%E5%8A%A1">通用服务</a>
+<ul>
+<li><a href="#%E7%89%B9%E7%82%B9-5">特点</a></li>
+<li><a href="#%E5%BB%BA%E8%AE%AE%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3-4">建议设计思想</a></li>
+<li><a href="#%E5%85%B8%E5%9E%8B-service-5">典型 Service</a></li>
+</ul>
+</li>
+<li><a href="#%E5%85%B8%E5%9E%8B%E7%9A%84%E4%B8%89%E7%A7%8D%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8D%8F%E4%BD%9C%E8%BF%87%E7%A8%8B%E8%BF%9B%E8%B4%A7%E4%BD%93%E7%B3%BB">典型的三种服务的协作过程——进货体系</a></li>
+<li><a href="#%E6%8A%80%E6%9C%AF-%E4%B8%9A%E5%8A%A1%E8%A7%A3%E8%80%A6%E6%9E%B6%E6%9E%84%E6%B2%BB%E7%90%86%E7%9A%841-9%E5%8E%9F%E5%88%99">技术-业务解耦——架构治理的1-9原则</a>
+<ul>
+<li><a href="#1-9%E5%8E%9F%E5%88%99">1-9原则</a></li>
+<li><a href="#%E4%BB%8E%E8%BD%AF%E4%BB%B6%E6%BC%94%E5%8F%98%E5%8F%B2%E5%8E%BB%E7%9C%8B">从软件演变史去看</a></li>
+<li><a href="#%E6%9E%81%E9%99%90%E6%83%85%E5%86%B5%E4%B8%8B%E7%9A%84%E5%8F%8D%E8%8C%83%E5%BC%8F%E8%AE%BE%E8%AE%A1">极限情况下的反范式设计</a></li>
+</ul>
+</li>
+<li><a href="#%E6%9E%B6%E6%9E%84%E5%B0%B1%E6%98%AF%E6%88%91%E4%BB%AC%E7%9A%84%E6%8A%80%E6%9C%AF%E4%BB%B7%E5%80%BC%E8%A7%82">架构就是我们的技术价值观</a></li>
+</ul>
+</li>
+<li><a href="#%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E4%B9%8B%E9%81%93%E5%A4%A7%E7%BA%B2%E7%89%88">技术架构之道（大纲版）</a>
+<ul>
+<li><a href="#%E9%AB%98%E5%B9%B6%E5%8F%91">高并发</a>
+<ul>
+<li><a href="#%E9%AB%98%E5%B9%B6%E5%8F%91%E8%AF%BB">高并发读</a></li>
+<li><a href="#%E9%AB%98%E5%B9%B6%E5%8F%91%E5%86%99">高并发写</a></li>
+<li><a href="#%E5%AE%B9%E9%87%8F%E8%A7%84%E5%88%92">容量规划</a></li>
+</ul>
+</li>
+<li><a href="#%E9%AB%98%E5%8F%AF%E7%94%A8%E4%B8%8E%E7%A8%B3%E5%AE%9A%E6%80%A7">高可用与稳定性</a></li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%B1%82">数据持久层</a></li>
+<li><a href="#%E7%BC%93%E5%AD%98%E5%B1%82">缓存层</a></li>
+</ul>
+</li>
+<li><a href="#%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E4%B9%8B%E9%81%93%E6%96%87%E5%AD%97%E8%AF%A6%E6%83%85%E7%89%88">技术架构之道（文字详情版）</a>
+<ul>
+<li><a href="#%E9%AB%98%E5%B9%B6%E5%8F%91-2">【高并发】</a></li>
+<li><a href="#%E9%AB%98%E6%80%A7%E8%83%BD">【高性能】</a></li>
+<li><a href="#%E9%AB%98%E5%8F%AF%E7%94%A8">【高可用】</a></li>
+</ul>
+</li>
+<li><a href="#%E5%85%B6%E4%BB%96%E6%9E%B6%E6%9E%84">其他架构</a>
+<ul>
+<li><a href="#%E7%9F%A5%E9%81%93%E5%9C%A8%E5%81%9A%E4%BB%80%E4%B9%88">知道在做什么</a></li>
+<li><a href="#%E7%9F%A5%E9%81%93%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%BF%99%E4%B9%88%E5%81%9A">知道为什么要这么做</a></li>
+</ul>
+</li>
+<li><a href="#%E9%99%84%E8%BD%AF%E4%BB%B6%E8%B4%A8%E9%87%8F%E6%A8%A1%E5%9E%8B">附：软件质量模型</a></li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://Yixiaohan.github.io/post/du-shu-bi-ji-lesslessdian-shang-chan-pin-jing-li-bao-dian-dian-shang-hou-tai-xi-tong-chan-pin-luo-ji-quan-jie-xi-greatergreater/">
+              <h3 class="post-title">
+                读书：《电商产品经理宝典：电商后台系统产品逻辑全解析》
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://Yixiaohan.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,411 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>大厂文章阅读：万字长文浅谈系统稳定性建设 | 江歌的博客</title>
+<link rel="shortcut icon" href="https://Yixiaohan.github.io/favicon.ico?v=1722343434767">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://Yixiaohan.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="大厂文章阅读：万字长文浅谈系统稳定性建设 | 江歌的博客 - Atom Feed" href="https://Yixiaohan.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="[TOC]
+
+原文链接：https://mp.weixin.qq.com/s/lPSNDH872Wmy7rkrq_U6_w
+作者：京东物流 王军
+
+1 背景
+京东的期中考试：当时618即将到来，各个团队都在进行期中考试前的模拟考试：军演压测..." />
+    <meta name="keywords" content="大厂文章阅读,高可用,稳定性" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://Yixiaohan.github.io">
+  <img class="avatar" src="https://Yixiaohan.github.io/images/avatar.png?v=1722343434767" alt="">
+  </a>
+  <h1 class="site-title">
+    江歌的博客
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              大厂文章阅读：万字长文浅谈系统稳定性建设
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-06-06
+              </span>
+              <span>
+                30 min read
+              </span>
+              
+                <a href="https://Yixiaohan.github.io/tag/RbioqcY1j/" class="post-tag">
+                  # 大厂文章阅读
+                </a>
+              
+                <a href="https://Yixiaohan.github.io/tag/VwYeq0QzXD/" class="post-tag">
+                  # 高可用
+                </a>
+              
+                <a href="https://Yixiaohan.github.io/tag/rlcTdLXtR7/" class="post-tag">
+                  # 稳定性
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>[TOC]</p>
+<ul>
+<li>原文链接：<a href="https://mp.weixin.qq.com/s/lPSNDH872Wmy7rkrq_U6_w">https://mp.weixin.qq.com/s/lPSNDH872Wmy7rkrq_U6_w</a></li>
+<li>作者：京东物流 王军</li>
+</ul>
+<h2 id="1-背景"><strong>1 背景</strong></h2>
+<p>京东的期中考试：当时618即将到来，各个团队都在进行期中考试前的模拟考试：军演压测，故障演练，系统的梳理以检测系统的稳定性以应对高可用，高性能，高并发。我们知道系统的稳定性建设是贯穿整个研发流程：需求阶段，研发阶段，测试阶段，上线阶段，运维阶段；整个流程中的所有参与人员：产品，研发，测试，运维人员都应关注系统的稳定性。业务的发展及系统建设过程中，稳定性就是那个1，其他的是1后面的0，没有稳定性，就好比将万丈高楼建于土沙之上。本篇文章主要从后端研发的视角针对研发阶段和上线阶段谈下稳定性建设，希望起到抛砖引玉的作用，由于本人的水平有限，文中难免有理解不到位或者不全面的地方，欢迎批评指正。</p>
+<h2 id="2-研发阶段"><strong>2 研发阶段</strong></h2>
+<p>研发阶段主要参与人员是研发，主要产出物是技术方案设计文档和代码，一个是研发阶段的开始，一个是研发阶段的结束，我们要把控好技术文档和代码质量，从而减少线下bug率及线上的故障。</p>
+<h2 id="21-技术方案"><strong>2.1 技术方案</strong></h2>
+<h3 id="211-技术方案评审"><strong>2.1.1 技术方案评审</strong></h3>
+<p>技术文档的评审需要有本团队的架构师和相关研发，测试，产品，上下游系统的研发同学参与，这样能够最大限度的保证技术方案的实现和产品需求对齐，上下游系统同学也知道我们的实现，采取更加合理的交互方式，测试同学也可以从测试视角给出一些风险点建议，架构师可以确保我们的实现和业界最佳实践的差异，确保合理性，避免过度设计；我们所要做的是开放心态采取大家的意见，严控技术文档的质量；</p>
+<p>技术文档的评审可以采用提问的方式，会议开始前可以将技术文档分享给大家，让大家先阅读10分钟，所有同学开始提问，技术文档设计人其实不用读自己的技术文档给大家介绍，只要将大家的问题回答完，并能够思考下大家的建议，合理的采纳后，其实技术文档的质量就有了很大的保证，有的同学在技术文档评审时，比较反感大家的提问，总感觉在挑战自己，有些问题回答不上来，其实可以换种思路：有些问题回答不上来是正常的，可以先将大家的建议采纳了，会后再思考下合理性；大家对自己技术方案是建言献策，是保证自己技术方案的质量，避免在技术方案阶段就存在重大的线上隐患。</p>
+<h3 id="212-技术方案关注点"><strong>2.1.2 技术方案关注点</strong></h3>
+<p>当我们遇到一个问题的时候，首先要思考的这是一个新问题还是老问题，99.99%遇到的都是老问题，因为我们所从事的是工程技术，不是科学探索；我们所要做的就是看下国内外同行针对这个问题的解法，learn from best practices；所以技术方案的第一步是对标，学习最佳实践，这样能让我们避免走弯路；</p>
+<p>同时根据奥卡姆剃刀原理，我们力求技术方案简单，避免过度设计，针对一个复杂的问题，我们的技术方案相对复杂些，简单的问题技术方案相对简单些，我们所要追求的是复杂的问题通过拆解划分，用一个个简单的技术方案解决掉。同时技术文档不仅关注功能的实现，更重要的是关注架构，性能，质量，安全；即如何打造一个高可用系统。打造一个高可用的系统是进行系统稳定性建设的前提，如果我们的系统都不能保证高可用，又谈何系统稳定性建设，下面介绍下进行系统稳定性建设我们在技术方案中常用的方法及关注点。</p>
+<h4 id="2121-限流">2.1.2.1 限流</h4>
+<p>限流一般是从服务提供者provider的视角提供的针对自我保护的能力，对于流量负载超过我们系统的处理能力，限流策略可以防止我们的系统被激增的流量打垮。京东内部无论是同步交互的JSF, 还是异步交互的JMQ都提供了限流的能力，大家可以根据自己系统的情况进行设置；我们知道常见的限流算法包括：计数器算法，滑动时间窗口算法，漏斗算法，令牌桶算法，具体算法可以网上google下，下面是这些算法的优缺点对比。</p>
+<figure data-type="image" tabindex="1"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0Dv0EHcHK3ZhSeRa07SOia6dffVD7gkoPP2JK4KcoEs6IDEeEU0ich303eA/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<h4 id="2122-熔断降级">2.1.2.2 熔断降级</h4>
+<p>熔断和降级是两件事情，但是他们一般是结合在一起使用的。熔断是防止我们的系统被下游系统拖垮，比如下游系统接口性能严重变差，甚至下游系统挂了；这个时候会导致大量的线程堆积，不能释放占用的CPU，内存等资源，这种情况下不仅影响该接口的性能，还会影响其他接口的性能，严重的情况会将我们的系统拖垮，造成雪崩效应，通过打开熔断器，流量不再请求到有问题的系统，可以保护我们的系统不被拖垮。降级是一种有损操作，我们作为服务提供者，需要将这种损失尽可能降到最低，无论是返回友好的提示，还是返回可接受的降级数据。降级细分的话又分为人工降级，自动降级。</p>
+<p>人工降级：人工降级一般采用降级开关来控制，公司内部一般采用配置中心Ducc来做开关降级，开关的修改也是线上操作，这块也需要做好监控；</p>
+<p>自动降级：自动降级是采用自动化的中间件例如Hystrix，公司的小盾龙等；如果采用自动降级的话；我们必须要对降级的条件非常的明确，比如失败的调用次数等。</p>
+<h4 id="2123-超时">2.1.2.3 超时</h4>
+<p>分布式系统中的难点之一：不可靠的网络，京东物流现有的微服务架构下，服务之间都是通过JSF网络交互进行同步通信，我们探测下游依赖服务是否可用的最快捷的方式是设置超时时间。超时的设置可以让系统快速失败，进行自我保护，避免无限等待下游依赖系统，将系统的线程耗尽，系统拖垮。</p>
+<p>超时时间如何设置也是一门学问，如何设置一个合理的超时时间也是一个逐步迭代的过程，比如下游新开发的接口，一般会基于压测提供一个TP99的耗时，我们会基于此配置超时时间；老接口的话，会基于线上的TP99耗时来配置超时时间。</p>
+<p>超时时间在设置的时候需要遵循漏斗原则，从上游系统到下游系统设置的超时时间要逐渐减少，如下图所示。为什么要满足漏斗原则，假设不满足漏斗原则，比如服务A调取服务B的超时时间设置成500ms，而服务B调取服务C的超时时间设置成800ms，这个时候会导致服务A调取服务B大量的超时从而导致可用率降低，而此时服务B从自身角度看是可用的。</p>
+<figure data-type="image" tabindex="2"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0DvFCfKpslbfsIrKJ5t43ATJI2v9gT75tAiagibiaZ8aj3fTNsmlQ0HiaJxKA/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<h4 id="2124-重试">2.1.2.4 重试</h4>
+<p>分布式系统中性能的影响主要是通信，无论是在分布式系统中还是跨团队沟通，communication是最昂贵的；比如我们研发都知道需求的交付有一半以上甚至更多的时间花在跨团队的沟通上，真正写代码的时间是很少的；分布式系统中我们查看调用链路，其实我们系统本身计算的耗时是很少的，主要来自于外部系统的网络交互，无论是下游的业务系统，还是中间件：Mysql, redis, es等等。</p>
+<p>所以在和外部系统的一次请求交互中，我们系统是希望尽最大努力得到想要的结果，但往往事与愿违，由于不可靠网络的原因，我们在和下游系统交互时，都会配置超时重试次数，希望在可接受的SLA范围内一次请求拿到结果，但重试不是无限的重试，我们一般都是配置重试次数的限制，偶尔抖动的重试可以提高我们系统的可用率，如果下游服务故障挂掉，重试反而会增加下游系统的负载，从而增加故障的严重程度。在一次请求调用中，我们要知道对外提供的API，后面是有多少个service在提供服务，如果调用链路比较长，服务之间rpc交互都设置了重试次数，这个时候我们需要警惕重试风暴。如下图service D 出现问题，重试风暴会加重service D的故障严重程度。对于API的重试，我们还要区分该接口是读接口还是写接口，如果是读接口重试一般没什么影响，写接口重试一定要做好接口的幂等性。</p>
+<figure data-type="image" tabindex="3"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0Dv81RcL9kDdEhnmIYxjW4MWw7XZcnAGKsmxQY7H9UNTOdxK2xPNwprHQ/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<h4 id="2125-兼容">2.1.2.5 兼容</h4>
+<p>我们在对老系统，老功能进行重构迭代的时候，一定要做好兼容，否则上线后会出现重大的线上问题，公司内外有大量因为没有做好兼容性，而导致资损的情况。兼容分为：向前兼容性和向后兼容性，需要好好地区分他们，如下是他们的定义:</p>
+<ul>
+<li>
+<p>向前兼容性：向前兼容性指的是旧版本的软件或硬件能够与将来推出的新版本兼容的特性，简而言之旧版本软件或系统兼容新的数据和流量。</p>
+</li>
+<li>
+<p>向后兼容性：向后兼容性则是指新版本的软件或硬件能够与之前版本的系统或组件兼容的特性，简而言之新版本软件或系统兼容老的数据和流量。</p>
+</li>
+</ul>
+<p>根据新老系统和新老数据我们可以将系统划分为四个象限：第一象限：新系统和新数据是我们系统改造上线后的状态，第三象限：老系统和老数据是我们系统改造上线前的状态，第一象限和第三象限的问题我们在研发和测试阶段一般都能发现排除掉，线上故障的高发期往往出现在第二和第四象限，第二象限是因为没有做好向前兼容性，例如上线过程中，发现问题进行了代码回滚，但是在上线过程中产生了新数据，回滚后的老系统不能处理上线过程中新产生的数据，导致线上故障。第四象限是因为没有做好向后兼容性，上线后新系统影响了老流程。针对第二象限的问题，我们可以构造新的数据去验证老的系统，针对第四象限的问题，我们可以通过流量的录制回放解决，录制线上的老流量，对新功能进行验证。</p>
+<figure data-type="image" tabindex="4"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0DvQGBQmW0Z7fC5AVD56WtF2wfwmfyKwx6YzwsMqgxiarrlGCeAuDYSKUQ/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<h4 id="2126-隔离">2.1.2.6 隔离</h4>
+<p>隔离是将故障爆炸半径最小化的有效手段，在技术方案设计中，我们通过不同层面的隔离来控制影响范围：</p>
+<h5 id="21261-系统层面隔离">2.1.2.6.1 系统层面隔离</h5>
+<p>我们知道系统的分类可以分为：在线的系统，离线系统（批处理系统），近实时系统（流处理系统），如下是这些系统的定义：</p>
+<ul>
+<li>
+<p>在线系统：服务端等待请求的到达，接收到请求后，服务尽可能快地处理，然后返回给客户端一个响应，响应时间通常是在线服务性能的主要衡量指标。我们生活中在手机使用的APP大部分都是在线系统；</p>
+</li>
+<li>
+<p>离线系统：或称批处理系统，接收大量的输入数据，运行一个作业来处理数据，并产出输出数据，作业往往需要定时，定期运行一段时间，比如从几分钟到几天，所以用户通常不会等待作业完成，吞吐量是离线系统的主要衡量指标。例如我们看到的报表数据：日订单量，月订单量，日活跃用户数，月活跃用户数都是批处理系统运算一段时间得到的；</p>
+</li>
+<li>
+<p>近实时系统：或者称流处理系统，其介于在线系统和离线系统之间，流处理系统一般会有触发源：用户的行为操作，数据库的写操作，传感器等，触发源作为消息会通过消息代理中间件：JMQ, KAFKA等进行传递，消费者消费到消息后再做其他的操作，例如构建缓存，索引，通知用户等。</p>
+</li>
+</ul>
+<p>以上三种系统是需要进行隔离建设的，因为他们的衡量指标及对资源的使用情况完全不一样的，比如我们小组会将在线系统作为一个服务单独部署：jdl-uep-main, 离线系统和近实时系统作为一个服务单独部署：jdl-uep-worker。</p>
+<h5 id="21262-环境的隔离">2.1.2.6.2 环境的隔离</h5>
+<p>从研发到上线阶段我们会使用不同的环境，比如业界常见的环境分为：开发，测试，预发和线上环境；研发人员在开发环境进行开发和联调，测试人员在测试环境进行测试，运营和产品在预发环境进行UAT，最终交付的产品部署到线上环境提供给用户使用。在研发流程中，我们部署时要遵循从应用层到中间件层再到存储层，都要在一个环境，严禁跨环境的调用，比如测试环境调用线上，预发环境调用线上等。</p>
+<figure data-type="image" tabindex="5"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0Dv4uQrjWSLj3vPJv8icibzruE7HfwE8ph9yib5J75KCRu1CuQHWsaZnO4hA/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<h5 id="21263-数据的隔离">2.1.2.6.3 数据的隔离</h5>
+<p>随着业务的发展，我们对外提供的服务往往会支撑多业务，多租户，所以这个时候我们会按照业务进行数据隔离；比如我们组产生的物流订单数据业务方就包含京东零售，其他电商平台，ISV等，为了避免彼此的影响我们需要在存储层对数据进行隔离，数据的隔离可以按照不同粒度，第一种是通过租户id字段进行区分，所有的数据存储在一张表中，另外一个是库粒度的区分，不同的租户单独分配对应的数据库。</p>
+<figure data-type="image" tabindex="6"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0DvEiceepBlnGnY8MCer7ePH3VhjAGnycs705TiaIsdJ3jVfD1m3Sg86xjg/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<p>数据的隔离除了按照业务进行隔离外，还有按照环境进行隔离的，比如我们的数据库分为测试库，预发库，线上库，全链路压测时，我们为了模拟线上的环境，同时避免污染线上的数据，往往会创建影子库，影子表等。根据数据的访问频次进行隔离，我们将经常访问的数据称为热数据，不经常访问的数据称为冷数据；将经常访问的数据缓存到缓存，提高系统的性能。不经常访问的数据持久化到数据库或者将不使用的数据进行结转归档。</p>
+<h5 id="21264-核心非核心隔离">2.1.2.6.4 核心，非核心隔离</h5>
+<p>我们知道应用是分级的，京东内部针对应用的重要程度会将应用分为0，1，2，3级应用。业务的流程也分为黄金流程和非黄金流程。在业务流程中，针对不同级别的应用交互，需要将核心和非核心的流程进行隔离。例如在交易业务过程中，会涉及到订单系统，支付系统，通知系统，那这个过程中核心系统是订单系统和支付系统，而通知相对来说重要性不是那么高，所以我们会投入更多的资源到订单系统和支付系统，优先保证这两个系统的稳定性，通知系统可以采用异步的方式与其他两个系统解耦隔离，避免对其他另外两个系统的影响。</p>
+<figure data-type="image" tabindex="7"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0DvpYJcWBZwCcmWxv32UutybkGfjoTtQqt80gJgQFxvfLwFwuwQR1hlFQ/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<h5 id="21265-读写隔离">2.1.2.6.5 读写隔离</h5>
+<p>应用层面，领域驱动设计（DDD）中最著名的CQRS（Command Query Responsibility Segregation）将写服务和读服务进行隔离。写服务主要处理来自客户端的command写命令，而读服务处理来自客户端的query读请求，这样从应用层面进行读写隔离，不仅可以提高系统的可扩展性，同时也会提高系统的可维护性，应用层面我们都采用微服务架构，应用层都是无状态服务，可以扩容加机器随意扩展，存储层需要持久化，扩展就比较费劲。除了应用层面的CQRS，在存储层面，我们也会进行读写隔离，例如数据库都会采用一主多从的架构，读请求可以路由到从库从而分担主库的压力，提高系统的性能和吞吐量。所以应用层面通过读写隔离主要解决可扩展问题，存储层面主要解决性能和吞吐量的问题。</p>
+<figure data-type="image" tabindex="8"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0DvWGf7xu7fkzkjH61f7JOicPM0WxvFPiaJ5BP35ic4WJKSxdjqXD0mfHibkA/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<h5 id="21266-线程池隔离">2.1.2.6.6 线程池隔离</h5>
+<p>线程是昂贵的资源，为了提高线程的使用效率，避免创建和销毁的消耗，我们采用了池化技术，线程池来复用线程，但是在使用线程池的过程中，我们也做好线程池的隔离，避免多个API接口复用同一个线程。</p>
+<figure data-type="image" tabindex="9"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0Dv82Tx9xAaJmLbic5hGMM1WyOhtvmYbQKibrbYTq8eSWPftazkNUibianZsA/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<h2 id="22-代码review"><strong>2.2 代码Review</strong></h2>
+<p>codeReview是研发阶段的最后一个流程，对线下的bug率和线上质量及稳定性有着重要的作用，针对于代码如何review，谈一些自己的看法：</p>
+<ul>
+<li>
+<p>形成团队代码风格：首先一个团队的代码应该形成该团队的代码风格，这样能够提高codeReview的效率及协作的效率，作为新加入的成员，应该遵循团队的代码风格规范。</p>
+</li>
+<li>
+<p>Review的关注点：代码review切记不要陷入细节，主要以review代码风格为主，如果一个团队形成统一的代码风格，我们通过review风格就能将大部分问题发现，在关注功能的同时，再关注下性能，安全。</p>
+</li>
+<li>
+<p>结对编程：在代码编写过程中，我们要培养结对编程的习惯，这样针对某次需求，codeReview时，熟悉该模块的同事把控下细节，架构师把控风格。</p>
+</li>
+<li>
+<p>控制每次review代码量：每次提交代码进行review时，不要一次性提交review大量的代码，要将review的内容细分，比如一个方法的实现，一个类等。</p>
+</li>
+<li>
+<p>开放心态：review的过程其实是学习提升的过程，通过代码review，虚心接受别人的意见，学习优雅代码的编写方式，提高自己的代码水平。</p>
+</li>
+</ul>
+<p><strong>03</strong></p>
+<p></p>
+<h2 id="上线阶段"><strong>上线阶段</strong></h2>
+<p>理解，首先 MCube 会依据模板缓存状态判断是否需要网络获取最新模板，当获取到模板后进行模板加载，加载阶段会将产物转换为视图树的结构，转换完成后将通过表达式引擎解析表达式并取得正确的值，通过事件解析引擎解析用户自定义事件并完成事件的绑定，完成解析赋值以及事件绑定后进行视图的渲染，最终将</p>
+<p>可以看下我司的故障管理平台所记录的故障：发生系统故障一般都是外部对系统做了改变，往往发生在上线阶段：代码的部署，数据库的更改，配置中心的变动等；上线阶段是故障的高发期；一个系统不可能不出线上问题，我们所要追求的是，降低线上的故障频率，缩短故障恢复时间。针对上线过程出现问题，我们知道业界有著名的上线过程三板斧：可监控，可灰度，可回滚。</p>
+<h2 id="31-上线三板斧"><strong>3.1 上线三板斧</strong></h2>
+<h3 id="311-可监控"><strong>3.1.1 可监控</strong></h3>
+<p>上线的过程中，我们的系统要做到可监控，如果没有监控，上线过程中我们对系统的状态是一无所知，是很可怕的。监控什么东西呢，其实监控的就是指标。这就涉及到指标的定义，指标我们分为业务指标和技术指标，技术指标又分为软件和硬件。业务指标一般是我们定义的观测业务变化情况的度量，例如订单量，支付量等。技术层面的软件指标：可用率，TP99, 调用量，技术层面的硬件指标：cpu 内存 磁盘 网络IO。目前我们二级部门在做OpsReview，主要review的是可用率，TP99，调用量这几个指标，分别对应系统的可用性，性能，并发。</p>
+<p>做好这些指标的监控后，我们接下来需要做的是针对这些指标做好告警，如果某个指标突破设定的阈值后，需要进行告警通知给我们，针对监控告警指标阈值的设置，建议先严后松，即系统建设初始阶段设置的严格些，避免遗漏告警，出现线上问题，后续随着系统建设的迭代需要设置更合理的告警阈值，避免告警泛滥，造成狼来了的效应。总之上线发布过程的一段时间是事故和问题发生的高峰，这块一定做好指标监控，日志监控，对报警要敏感。</p>
+<figure data-type="image" tabindex="10"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0DvhjnKYzSl5iagZE66gofzuKou816GJ6lj7DZpQS9Qa7TE1dO6tY3aS2g/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<h3 id="312-可灰度"><strong>3.1.2 可灰度</strong></h3>
+<p>上线过程中，我们要做到可灰度，通过灰度执行变更以限制爆炸半径，降低影响范围，同时灰度过程要做好兼容。灰度分为不同维度的灰度：机器维度，机房维度，地域维度，业务维度：用户，商家，仓，承运商等。</p>
+<p>机器维度：我们用行云部署时，可以每个分组先部署一部分机器进行灰度，灰度一段时间比如：24小时没什么问题后，再部署剩余的机器。</p>
+<p>机房维度：微服务架构下，我们的应用会部署在不同的机房中，可以按照机房维度灰度，比如先部署发布代码在某个机房分组下，观察一段时间再按照比例扩大灰度机房范围直至全量。例如先部署中云信的机房，灰度一段时间后，再逐步灰度有孚的机房。</p>
+<p>地域维度：现在的部署架构都是多机房互为灾备，异地多活，单元化部署，例如业界美团的外卖业务非常适合做异地多活，单元化部署，因为外卖业务的商户，用户，骑手天然具有聚合性，北京的用户大概率不会在上海点外卖，这样根据业务的属性，在系统建设的时候，从应用层到中间件层，再到存储层可以单元化部署在上海地域的机房和北京地域的机房，功能发布的时候可以灰度某个地域，做到地域级别的容灾。</p>
+<p>业务维度：在上线过程中，我们也可以根据业务属性进行灰度，例如上线了某个功能或者产品，根据用户维度灰度，某些用户或者某些商户才能使用该功能，产品。</p>
+<h3 id="313-可回滚"><strong>3.1.3 可回滚</strong></h3>
+<p>线上出现问题时，我们应该优先止损，其次才是分析根因。止损的最快方式就是回滚，回滚分为代码回滚和数据回滚，代码回滚即将我们代码恢复到原有的逻辑，代码回滚有两种方式：开关控制和部署回滚。最快捷的方式是开关控制，一键开关打开或者关闭就可以实现回滚到原有的逻辑，操作成本最低，止损最快速。第二种方式就是部署回滚，通过发布平台，例如行云将代码回滚到上个稳定运行的版本。有时候我们代码回滚完，如果没有做好向前兼容性，系统应用依然有问题，例如上线过程中产生了新数据，回滚完后，代码不能处理新的数据。所以这个时候又涉及到数据的回滚，数据的回滚涉及到修数：将产生的新数据无效掉，或者修改为正确的数据等，当数据量比较大时，数据的回滚一般耗时费力，所以建议做好向前兼容性，直接代码回滚。</p>
+<h2 id="32-线上问题应对"><strong>3.2 线上问题应对</strong></h2>
+<h3 id="321-常见问题分类"><strong>3.2.1 常见问题分类</strong></h3>
+<p>针对线上的问题，我们第一步是识别出是什么问题，然后才能解决问题，针对线上各种各样的问题我们可以进行聚合，归并分类下，针对每种问题去参考业界的处理方法和团队的内的紧急预案，做到临阵不乱。</p>
+<figure data-type="image" tabindex="11"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0Dvp8HmUZb2d4DECaImzrxp5HTcqYCMyJVsv0kKa2UEejSVARoJ4gmvAQ/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<h3 id="322-问题生命周期"><strong>3.2.2 问题生命周期</strong></h3>
+<p>当出现问题时，我们也需要清楚一个线上问题的生命周期：从问题发生，到我们发现问题，进而进行响应处理，观测问题是否修复，服务是否恢复正常，到最终针对该问题进行复盘，当发生系统发生问题时，我们越早发现问题，对业务的影响越小，整个流程如下图所示。</p>
+<figure data-type="image" tabindex="12"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0DvBMiaZMso02sVcxQxJHFkUBfc0tpZ1wucSuvUqibABXoI2rUKe9pf4hjA/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<h3 id="323-如何预防问题"><strong>3.2.3 如何预防问题</strong></h3>
+<p>就像人的身体生病一样，当问题发生已经晚了，我们要投入更多时间和精力到如何预防中，就像扁鹊的大哥一样治未病，防患于未然。根据破窗原理，一个问题出现了，如果放任不管，问题的严重性会越来越大，直到不可挽回。我们可以从研发的规范，研发的流程，变更流程这几个方面进行预防。</p>
+<figure data-type="image" tabindex="13"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0DvboadicVH3gibYMZicYLmgJsk7iaDaqYCdicOYziaBMjNaz0HxyzyypEToTQQ/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<h3 id="324-如何发现问题"><strong>3.2.4 如何发现问题</strong></h3>
+<p>对于一个系统，如果外界不对其做功，根据熵增原理，其会越来越混乱，直到出现问题，外界对其做功，就涉及到改变，因为改变是人在操作，由于各种不可控的因素，也会导致各种线上问题，所以我们可以看到对于一个系统上线后不出现问题是不可能的，当出现问题时，我们第一步是如何快速的发现问题？对于问题发现的渠道，工作中接触到的有如下几种：自我意识，监控告警，业务反馈；</p>
+<p>自我意识：我们C2部门每周有一个重要会议OpsReview，各个C3团队会对各团队的核心接口的不规律跳点，毛刺进行可用率，性能，调用量的review，以通过这种主动的，自我意识行为发现潜在的线上问题。同时我们组每天早会的重要一项：UMP监控全域看板的review，我们会对昨天核心接口的可用率，TP99，调用量，进行分析的，对于可用率降低，TP99有毛刺，不规范的流量调用会进行排查原因，尽早自我发现问题，同时也会对机器的CPU, 内存使用率，Mysql, redis , es各种存储进行review。</p>
+<p>监控告警：这是我们发现问题最常用的渠道，通过主动的监控指标，被动的接收告警来发现问题，告警指标我们分为业务指标和技术指标，具体分类可详见3.1.1可监控部分；</p>
+<p>业务反馈：这种发现问题的方式是我们最不愿意看到的，如果等到业务反馈，说明线上问题已经影响到用户，我们常常因为监控告警的缺失，漏报而导致落后于业务发现问题，所以我们最希望每个人，团队都有这种自我意识，将线上问题提早发现，防患于未然。</p>
+<h3 id="325-如何响应问题">3.2.5 如何响应问题</h3>
+<p>出现线上问题后，我们个人对问题的认知是非常有限的，并且这个时候人处于一种高度紧张的状态，所以这个时候一定要群里周知自己的leader，将情况如实表达，不要夸大和缩小问题的范围和影响，同时将问题进行通告。整个问题的响应过程包含以下几步：</p>
+<p>1.保留现场：问题发生的现场是我们排查问题的依据，所以要将现场的日志，数据等信息保存好，比如内存dump, 线程dump，避免机器重启后这些信息的丢失；</p>
+<p>2.提供信息：提供自己所知道的信息，协助排查，不要扩大和缩小问题；</p>
+<p>3.恢复服务：当出现线上问题时，我们追求的是以最快的速度恢复服务，快速止损，业界有快速止血，恢复服务的几板斧：回滚：服务回滚，数据回滚，重启，扩容，禁用节点，功能降级；</p>
+<p>4.双重确认：服务恢复后，我们需要确认是否恢复了，可以通过观察：业务指标是否正常，技术指标是否正常，数据是否正常，日志是否正常等来观测问题的恢复情况；</p>
+<p>5.故障通告：确认问题没有什么问题后，需要在应急群中周知大家：业务人员，产品经理，系统的上下游，测试人员，SRE等。并让产品和业务进行确认，然后周知用户。</p>
+<h3 id="326-如何定位问题"><strong>3.2.6 如何定位问题</strong></h3>
+<p>服务恢复后，我们可以回过头来细致地分析下到底是什么原因导致了线上的问题。定位问题也要讲究方法论，这就涉及到定位问题三要素：知识，工具，方法。</p>
+<p>知识：相对其他行业，计算机行业应该是知识更新迭代最快的行业，所以我们需要不断地去学习，更新自己的知识库，不给自己设限。例如你想解决FullGC问题，你必须对JVM进行系统的学习，想解决慢sql，必须对Mysql进行系统的学习，现在AI大模型这么火，我们也需要对prompt engineering， RAG ， Agent, 多模态等进行学习了解。有了知识我们才能遇到问题时，知道是什么，为什么？</p>
+<p>工具：工欲善其事，必先利其器，工程师要善于借助公司工具来提高解决问题的效率，熟练使用公司各种中间件工具，公司已经有的中间件，优先使用公司的中间件，公司内一个中间件团队维护的中间件工具要优于业务研发小组内维护的中间件工具，不要小组内部，或者团队内部重复造轮子，并且小组内人员的流动变更，容易造成中间件没人维护。下图是公司常用的中间件工具：</p>
+<figure data-type="image" tabindex="14"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0DvfBVoIQwqNFZZrXupB0ePvwDNpkUicS8ricUbZeIIaBic4vlkU3Syf5wkA/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<p>方法：解决问题我们要讲究方法，选择正确的方法可以事半功倍，提高我们定位问题及解决问题的效率，下面是我们研发人员常见的排查问题的方法：</p>
+<figure data-type="image" tabindex="15"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0DvYicmwaIBgrHn9hySWjQtfYqM9EMdNpIqOQE2U7AWbhhAKOUN9q9R91g/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<h3 id="327-如何修复问题"><strong>3.2.7 如何修复问题</strong></h3>
+<p>有了知识，工具和方法后，其实我们很快的就定位到问题了，定位到问题后，我们就要想办法如何去把问题修复了，以下是问题修复的流程：</p>
+<figure data-type="image" tabindex="16"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0Dv0Uianz9LAF2L2F3OySMPNF5KvmY8iceqUO9cyIAnSaGJRBbGrkRMiczFQ/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<h3 id="328-如何复盘问题"><strong>3.2.8 如何复盘问题</strong></h3>
+<p>问题发生后，我们需要从此次问题中分析根因，并汲取教训和经验，避免犯同样的错误。这就涉及到问题的复盘，如何进行问题的复盘呢，一般会经过如下几个步骤：回顾目标，评价结果，分析原因，总结经验。例如我们C2部门每周的opsReview会议上都会有线上问题的复盘：coe，如何进行coe复盘谈一些自己的思考。</p>
+<ul>
+<li>
+<p>参考业界的5WHY分析法剖析问题的根因</p>
+</li>
+<li>
+<p>5WHY分析法：5代表的是问题的深度，而不是问题的数量</p>
+</li>
+<li>
+<p>基于问题的答案继续进行提问，5个问题是有关联的，层层递进的，找到问题的根因</p>
+</li>
+</ul>
+<figure data-type="image" tabindex="17"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1VgOVyHia4T4eXrZ0qtlM0DvyLY8ws3qCSDYvjkbPEOPT3HKqXZN4GNtQ17ovX3VDM0ZyxBe6gaugw/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+<p><strong>04</strong></p>
+<p></p>
+<h2 id="参考资料"><strong>参考资料</strong></h2>
+<p>理解，首先 MCube 会依据模板缓存状态判断是否需要网络获取最新模板，当获取到模板后进行模板加载，加载阶段会将产物转换为视图树的结构，转换完成后将通过表达式引擎解析表达式并取得正确的值，通过事件解析引擎解析用户自定义事件并完成事件的绑定，完成解析赋值以及事件绑定后进行视图的渲染，最终将</p>
+<ul>
+<li>
+<p>https://itrevolution.com/articles/20-years-of-google-sre-10-key-lessons-for-reliability/</p>
+</li>
+<li>
+<p>https://learn.microsoft.com/en-us/previous-versions/msp-n-p/jj591573(v=pandp.10)?redirectedfrom=MSDN</p>
+</li>
+<li>
+<p>https://sre.google/books/</p>
+</li>
+</ul>
+<figure data-type="image" tabindex="18"><img src="https://mmbiz.qpic.cn/mmbiz_png/RQv8vncPm1UibHPAanTaZmNVW2yn5bYF7rUiaXg1tNeElo6pVnvsQhGsVMSiaLn7bT6icNKw0caXsV9icVXUbRQ3S7A/640?wx_fmt=png&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片" loading="lazy"></figure>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#1-%E8%83%8C%E6%99%AF"><strong>1 背景</strong></a></li>
+<li><a href="#2-%E7%A0%94%E5%8F%91%E9%98%B6%E6%AE%B5"><strong>2 研发阶段</strong></a></li>
+<li><a href="#21-%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88"><strong>2.1 技术方案</strong></a>
+<ul>
+<li><a href="#211-%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88%E8%AF%84%E5%AE%A1"><strong>2.1.1 技术方案评审</strong></a></li>
+<li><a href="#212-%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88%E5%85%B3%E6%B3%A8%E7%82%B9"><strong>2.1.2 技术方案关注点</strong></a>
+<ul>
+<li><a href="#2121-%E9%99%90%E6%B5%81">2.1.2.1 限流</a></li>
+<li><a href="#2122-%E7%86%94%E6%96%AD%E9%99%8D%E7%BA%A7">2.1.2.2 熔断降级</a></li>
+<li><a href="#2123-%E8%B6%85%E6%97%B6">2.1.2.3 超时</a></li>
+<li><a href="#2124-%E9%87%8D%E8%AF%95">2.1.2.4 重试</a></li>
+<li><a href="#2125-%E5%85%BC%E5%AE%B9">2.1.2.5 兼容</a></li>
+<li><a href="#2126-%E9%9A%94%E7%A6%BB">2.1.2.6 隔离</a>
+<ul>
+<li><a href="#21261-%E7%B3%BB%E7%BB%9F%E5%B1%82%E9%9D%A2%E9%9A%94%E7%A6%BB">2.1.2.6.1 系统层面隔离</a></li>
+<li><a href="#21262-%E7%8E%AF%E5%A2%83%E7%9A%84%E9%9A%94%E7%A6%BB">2.1.2.6.2 环境的隔离</a></li>
+<li><a href="#21263-%E6%95%B0%E6%8D%AE%E7%9A%84%E9%9A%94%E7%A6%BB">2.1.2.6.3 数据的隔离</a></li>
+<li><a href="#21264-%E6%A0%B8%E5%BF%83%E9%9D%9E%E6%A0%B8%E5%BF%83%E9%9A%94%E7%A6%BB">2.1.2.6.4 核心，非核心隔离</a></li>
+<li><a href="#21265-%E8%AF%BB%E5%86%99%E9%9A%94%E7%A6%BB">2.1.2.6.5 读写隔离</a></li>
+<li><a href="#21266-%E7%BA%BF%E7%A8%8B%E6%B1%A0%E9%9A%94%E7%A6%BB">2.1.2.6.6 线程池隔离</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#22-%E4%BB%A3%E7%A0%81review"><strong>2.2 代码Review</strong></a></li>
+<li><a href="#%E4%B8%8A%E7%BA%BF%E9%98%B6%E6%AE%B5"><strong>上线阶段</strong></a></li>
+<li><a href="#31-%E4%B8%8A%E7%BA%BF%E4%B8%89%E6%9D%BF%E6%96%A7"><strong>3.1 上线三板斧</strong></a>
+<ul>
+<li><a href="#311-%E5%8F%AF%E7%9B%91%E6%8E%A7"><strong>3.1.1 可监控</strong></a></li>
+<li><a href="#312-%E5%8F%AF%E7%81%B0%E5%BA%A6"><strong>3.1.2 可灰度</strong></a></li>
+<li><a href="#313-%E5%8F%AF%E5%9B%9E%E6%BB%9A"><strong>3.1.3 可回滚</strong></a></li>
+</ul>
+</li>
+<li><a href="#32-%E7%BA%BF%E4%B8%8A%E9%97%AE%E9%A2%98%E5%BA%94%E5%AF%B9"><strong>3.2 线上问题应对</strong></a>
+<ul>
+<li><a href="#321-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%88%86%E7%B1%BB"><strong>3.2.1 常见问题分类</strong></a></li>
+<li><a href="#322-%E9%97%AE%E9%A2%98%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><strong>3.2.2 问题生命周期</strong></a></li>
+<li><a href="#323-%E5%A6%82%E4%BD%95%E9%A2%84%E9%98%B2%E9%97%AE%E9%A2%98"><strong>3.2.3 如何预防问题</strong></a></li>
+<li><a href="#324-%E5%A6%82%E4%BD%95%E5%8F%91%E7%8E%B0%E9%97%AE%E9%A2%98"><strong>3.2.4 如何发现问题</strong></a></li>
+<li><a href="#325-%E5%A6%82%E4%BD%95%E5%93%8D%E5%BA%94%E9%97%AE%E9%A2%98">3.2.5 如何响应问题</a></li>
+<li><a href="#326-%E5%A6%82%E4%BD%95%E5%AE%9A%E4%BD%8D%E9%97%AE%E9%A2%98"><strong>3.2.6 如何定位问题</strong></a></li>
+<li><a href="#327-%E5%A6%82%E4%BD%95%E4%BF%AE%E5%A4%8D%E9%97%AE%E9%A2%98"><strong>3.2.7 如何修复问题</strong></a></li>
+<li><a href="#328-%E5%A6%82%E4%BD%95%E5%A4%8D%E7%9B%98%E9%97%AE%E9%A2%98"><strong>3.2.8 如何复盘问题</strong></a></li>
+</ul>
+</li>
+<li><a href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><strong>参考资料</strong></a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://Yixiaohan.github.io/post/mysql-xing-neng-diao-you-check-list/">
+              <h3 class="post-title">
+                MySQL 性能调优 Check List
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://Yixiaohan.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

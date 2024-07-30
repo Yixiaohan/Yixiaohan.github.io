@@ -1,0 +1,254 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MySQL 性能调优 Check List | 江歌的博客</title>
+<link rel="shortcut icon" href="https://Yixiaohan.github.io/favicon.ico?v=1722343434767">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://Yixiaohan.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="MySQL 性能调优 Check List | 江歌的博客 - Atom Feed" href="https://Yixiaohan.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="当说到 SQL 慢时，可能有哪些原因？
+无索引或者索引失效
+解决思路：explain 关键字
+长事务（大事务）
+思考题：声明式事务（注解）、编程式事务（手动写代码），其中哪个导致的长事务问题多？
+多表join
+查询字段太多
+
+排查确定业务是..." />
+    <meta name="keywords" content="MySQL,性能优化" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://Yixiaohan.github.io">
+  <img class="avatar" src="https://Yixiaohan.github.io/images/avatar.png?v=1722343434767" alt="">
+  </a>
+  <h1 class="site-title">
+    江歌的博客
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              MySQL 性能调优 Check List
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-06-02
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+                <a href="https://Yixiaohan.github.io/tag/ELhQZQV34/" class="post-tag">
+                  # MySQL
+                </a>
+              
+                <a href="https://Yixiaohan.github.io/tag/lyqwLZRmb/" class="post-tag">
+                  # 性能优化
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>当说到 SQL 慢时，可能有哪些原因？</p>
+<h2 id="无索引或者索引失效">无索引或者索引失效</h2>
+<p>解决思路：explain 关键字</p>
+<h2 id="长事务大事务">长事务（大事务）</h2>
+<p>思考题：声明式事务（注解）、编程式事务（手动写代码），其中哪个导致的长事务问题多？</p>
+<h2 id="多表join">多表join</h2>
+<h2 id="查询字段太多">查询字段太多</h2>
+<ul>
+<li>排查确定业务是否真的需要查询出所有字段，select * from</li>
+<li>数据库中存放的数据都是适合在数据库中存放的吗？（大文本）</li>
+</ul>
+<ol>
+<li>只查询需要的列</li>
+<li>针对最频繁的查询来设计覆盖索引<br>
+以两种说法本质上都是为了避免<strong>回表</strong></li>
+</ol>
+<h2 id="表中数据量太大">表中数据量太大</h2>
+<p>解决思路：</p>
+<ul>
+<li>数据归档、冷热分离</li>
+<li>分库分表</li>
+<li>其他存储（ES、TiDB等）</li>
+</ul>
+<h2 id="索引区分度不高">索引区分度不高</h2>
+<p>性别、状态等区分度不高的字段，做为索引是否合适？</p>
+<h2 id="数据库连接数不够">数据库连接数不够</h2>
+<h2 id="锁竞争导致的等待">锁竞争导致的等待</h2>
+<h2 id="数据库的表结构不合理">数据库的表结构不合理</h2>
+<p>解决思路：合理的冗余</p>
+<h2 id="数据库-io-或者数据库-cpu-比较高">数据库 IO 或者数据库 CPU 比较高</h2>
+<h2 id="数据库参数不合理">数据库参数不合理</h2>
+<p>找 DBA 咨询一下</p>
+<h3 id="系统配置优化">系统配置优化</h3>
+<p>大多数运行在Linux机器上，如tcp连接数的限制、打开文件数的限制、安全性的限制，因此我们要对这些配置进行相应的优化。</p>
+<h3 id="硬件配置优化">硬件配置优化</h3>
+<ol>
+<li>
+<p>数据库主机的 IO 性能是需要最优先考虑的一个因素</p>
+</li>
+<li>
+<p>数据库主机和普通的应用程序服务器相比，资源要相对集中很多，单台主机上所需要进行的计算量自然也就比较多，所以数据库主机的 CPU 处理能力也是一个重要的因素</p>
+</li>
+<li>
+<p>数据库主机的网络设备（一般指网卡等）的性能也可能会成为系统的瓶颈</p>
+</li>
+</ol>
+<h2 id="是否可以转化为批量查询">是否可以转化为批量查询</h2>
+<h2 id="硬件是否合理机械硬盘-ssd">硬件是否合理（机械硬盘、SSD）</h2>
+<!-- more -->
+<!-- more -->
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E6%97%A0%E7%B4%A2%E5%BC%95%E6%88%96%E8%80%85%E7%B4%A2%E5%BC%95%E5%A4%B1%E6%95%88">无索引或者索引失效</a></li>
+<li><a href="#%E9%95%BF%E4%BA%8B%E5%8A%A1%E5%A4%A7%E4%BA%8B%E5%8A%A1">长事务（大事务）</a></li>
+<li><a href="#%E5%A4%9A%E8%A1%A8join">多表join</a></li>
+<li><a href="#%E6%9F%A5%E8%AF%A2%E5%AD%97%E6%AE%B5%E5%A4%AA%E5%A4%9A">查询字段太多</a></li>
+<li><a href="#%E8%A1%A8%E4%B8%AD%E6%95%B0%E6%8D%AE%E9%87%8F%E5%A4%AA%E5%A4%A7">表中数据量太大</a></li>
+<li><a href="#%E7%B4%A2%E5%BC%95%E5%8C%BA%E5%88%86%E5%BA%A6%E4%B8%8D%E9%AB%98">索引区分度不高</a></li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%95%B0%E4%B8%8D%E5%A4%9F">数据库连接数不够</a></li>
+<li><a href="#%E9%94%81%E7%AB%9E%E4%BA%89%E5%AF%BC%E8%87%B4%E7%9A%84%E7%AD%89%E5%BE%85">锁竞争导致的等待</a></li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E8%A1%A8%E7%BB%93%E6%9E%84%E4%B8%8D%E5%90%88%E7%90%86">数据库的表结构不合理</a></li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E5%BA%93-io-%E6%88%96%E8%80%85%E6%95%B0%E6%8D%AE%E5%BA%93-cpu-%E6%AF%94%E8%BE%83%E9%AB%98">数据库 IO 或者数据库 CPU 比较高</a></li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E5%8F%82%E6%95%B0%E4%B8%8D%E5%90%88%E7%90%86">数据库参数不合理</a>
+<ul>
+<li><a href="#%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE%E4%BC%98%E5%8C%96">系统配置优化</a></li>
+<li><a href="#%E7%A1%AC%E4%BB%B6%E9%85%8D%E7%BD%AE%E4%BC%98%E5%8C%96">硬件配置优化</a></li>
+</ul>
+</li>
+<li><a href="#%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5%E8%BD%AC%E5%8C%96%E4%B8%BA%E6%89%B9%E9%87%8F%E6%9F%A5%E8%AF%A2">是否可以转化为批量查询</a></li>
+<li><a href="#%E7%A1%AC%E4%BB%B6%E6%98%AF%E5%90%A6%E5%90%88%E7%90%86%E6%9C%BA%E6%A2%B0%E7%A1%AC%E7%9B%98-ssd">硬件是否合理（机械硬盘、SSD）</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://Yixiaohan.github.io/post/wo-dui-xin-ling-shou-dian-shang-jia-gou-de-yi-xie-si-kao/">
+              <h3 class="post-title">
+                我对新零售电商架构的一些思考
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://Yixiaohan.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
